@@ -1,1 +1,3 @@
-package main.java.ryans.blog.app;
+package ryans.blog.app;
+
+public class Post {}

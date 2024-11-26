@@ -1,6 +1,7 @@
-package main.java.ryans.blog.model;
+package ryans.blog.model;
 
-public class Post{
+public class PostModel {
+
     private int id;
     private String title;
     private String description;
@@ -8,37 +9,63 @@ public class Post{
     private int userId;
     private String createdAt;
 
-
-    public Post(int id, String title, String description, String content, int userId, String createdAt){
+    public PostModel(
+        int id,
+        String title,
+        String description,
+        String content,
+        int userId,
+        String createdAt
+    ) {
         this.id = id;
         this.title = title;
         this.description = description;
         this.content = content;
-        this.userId=userId;
+        this.userId = userId;
         this.createdAt = createdAt;
     }
 
-
-    private int getId(){
+    public int getId() {
         return this.id;
     }
-    private void setId(int id){
+
+    public void setId(int id) {
         this.id = id;
     }
-    private String getTitle(){
+
+    public String getTitle() {
         return this.title;
     }
-    private void setTitle(String title){
+
+    public void setTitle(String title) {
         this.title = title;
     }
-    private String getDescription(){
+
+    public String getDescription() {
         return description;
     }
-    private String setDescription(String description){
+
+    public void setDescription(String description) {
         this.description = description;
     }
-    private String getContent(){
+
+    public String getContent() {
         return content;
     }
-    private String
+
+    public void setCreatedAt(String createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public void setUserId(int id) {
+        this.userId = id;
+    }
+
+    public int getUserId() {
+        return this.userId;
+    }
+
+    public String getCreatedAt() {
+        return this.createdAt;
+    }
 }

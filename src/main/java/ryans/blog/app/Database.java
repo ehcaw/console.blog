@@ -1,4 +1,4 @@
-package main.java.ryans.blog.app;
+package ryans.blog.app;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -14,4 +14,6 @@ public class Database {
     public static Connection getConnection() throws SQLException {
         return DriverManager.getConnection(databaseUrl, USER, PASSWORD);
     }
+
+    public static void closeConnection() throws SQLException {}
 }
