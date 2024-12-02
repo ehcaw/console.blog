@@ -11,3 +11,18 @@ buildNumber.properties
 .classpath
 .project
 .settings/
+
+# IDE files
+.idea/
+.vscode/
+*.iml
+
+# Database files
+*.db
+*.db-journal
+
+# Logs
+*.log
+
+# Node modules
+node_modules/
