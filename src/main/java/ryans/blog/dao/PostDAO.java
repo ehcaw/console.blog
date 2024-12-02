@@ -1,30 +1,143 @@
 package ryans.blog.dao;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import ryans.blog.model.PostModel;
+import ryans.blog.model.Post;
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class PostDAO {
-
     private Connection connection;
 
     public PostDAO(Connection connection) {
         this.connection = connection;
     }
 
-    public void insertPost(PostModel post) {
-        String query =
-            "INSERT INTO POSTS (title, description, content, user_id, created_at) VALUES (?, ?, ?, ?, ?)";
-        try (PreparedStatement stmt = connection.prepareStatement(query)) {
-            stmt.setString(1, post.getTitle());
-            stmt.setString(2, post.getDescription());
-            stmt.setString(3, post.getContent()); // Insert formatted content
-            stmt.setInt(4, post.getUserId());
-            stmt.setString(5, post.getCreatedAt());
-            stmt.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
+    public void createTable() throws SQLException {
+        String sql = """
+            CREATE TABLE IF NOT EXISTS posts (
+                post_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                title VARCHAR(200) NOT NULL,
+                content TEXT NOT NULL,
+                author_id INTEGER NOT NULL,
+                post_date TIMESTAMP NOT NULL,
+                FOREIGN KEY (author_id) REFERENCES users(user_id) ON DELETE CASCADE
+            )
+        """;
+        
+        try (Statement stmt = connection.createStatement()) {
+            stmt.execute(sql);
         }
+    }
+
+    public Post create(Post post) throws SQLException {
+        String sql = "INSERT INTO posts (title, content, author_id, post_date) VALUES (?, ?, ?, ?)";
+        
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            pstmt.setString(1, post.getTitle());
+            pstmt.setString(2, post.getContent());
+            pstmt.setLong(3, post.getAuthorId());
+            pstmt.setTimestamp(4, Timestamp.valueOf(post.getPostDate()));
+            
+            int affectedRows = pstmt.executeUpdate();
+            if (affectedRows == 0) {
+                throw new SQLException("Creating post failed, no rows affected.");
+            }
+
+            // Get the last inserted id
+            try (Statement stmt = connection.createStatement();
+                 ResultSet rs = stmt.executeQuery("SELECT last_insert_rowid()")) {
+                if (rs.next()) {
+                    post.setPostId(rs.getLong(1));
+                }
+            }
+        }
+        return post;
+    }
+
+    public Post findById(Long id) throws SQLException {
+        String sql = "SELECT * FROM posts WHERE post_id = ?";
+        
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            pstmt.setLong(1, id);
+            
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    return mapResultSetToPost(rs);
+                }
+            }
+        }
+        return null;
+    }
+
+    public List<Post> findByAuthor(Long authorId) throws SQLException {
+        String sql = "SELECT * FROM posts WHERE author_id = ? ORDER BY post_date DESC";
+        List<Post> posts = new ArrayList<>();
+        
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            pstmt.setLong(1, authorId);
+            
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    posts.add(mapResultSetToPost(rs));
+                }
+            }
+        }
+        return posts;
+    }
+
+    public List<Post> findAll() throws SQLException {
+        String sql = "SELECT * FROM posts ORDER BY post_date DESC";
+        List<Post> posts = new ArrayList<>();
+        
+        try (Statement stmt = connection.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+            while (rs.next()) {
+                posts.add(mapResultSetToPost(rs));
+            }
+        }
+        return posts;
+    }
+
+    public boolean update(Post post) throws SQLException {
+        String sql = "UPDATE posts SET title = ?, content = ? WHERE post_id = ? AND author_id = ?";
+        
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            pstmt.setString(1, post.getTitle());
+            pstmt.setString(2, post.getContent());
+            pstmt.setLong(3, post.getPostId());
+            pstmt.setLong(4, post.getAuthorId());
+            
+            return pstmt.executeUpdate() > 0;
+        }
+    }
+
+    public boolean delete(Long postId, Long authorId) throws SQLException {
+        String sql = "DELETE FROM posts WHERE post_id = ? AND author_id = ?";
+        
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            pstmt.setLong(1, postId);
+            pstmt.setLong(2, authorId);
+            return pstmt.executeUpdate() > 0;
+        }
+    }
+
+    public void delete(int postId) {
+        String sql = "DELETE FROM posts WHERE post_id = ?";
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            pstmt.setInt(1, postId);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException("Error deleting post with ID: " + postId, e);
+        }
+    }
+
+    private Post mapResultSetToPost(ResultSet rs) throws SQLException {
+        Post post = new Post();
+        post.setPostId(rs.getLong("post_id"));
+        post.setTitle(rs.getString("title"));
+        post.setContent(rs.getString("content"));
+        post.setAuthorId(rs.getLong("author_id"));
+        post.setPostDate(rs.getTimestamp("post_date").toLocalDateTime());
+        return post;
     }
 }

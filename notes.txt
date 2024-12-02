@@ -1,5 +1,5 @@
 to package and build, run this ->
-maven clean package
+mvn clean package
 
 to run the webserver, run this ->
 java -cp target/console.blog-1.0-SNAPSHOT.jar ryans.blog.app.BlogController
