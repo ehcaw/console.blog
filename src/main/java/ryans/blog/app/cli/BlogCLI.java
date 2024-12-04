@@ -28,7 +28,7 @@ import ryans.blog.app.cli.utils.ConsoleTheme;
     name = "console.blog",
     subcommands = {
         ListCommand.class,
-        //CreateCommand.class,
+        CreateCommand.class,
         ReadCommand.class,
         //ExitCommand.class,
         HelpCommand.class,
