@@ -1,17 +1,36 @@
 package ryans.blog.app.cli.commands;
 
 import java.sql.Connection;
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import picocli.CommandLine.Command;
 import ryans.blog.app.Database;
+import ryans.blog.app.Database;
 import ryans.blog.app.cli.utils.AsciiArt;
 import ryans.blog.app.cli.utils.ConsoleColors;
 import ryans.blog.app.cli.utils.ConsoleTheme;
+import ryans.blog.dao.UserDAO;
 
 @Command(name = "list", description = "List all blog posts")
 public class ListCommand implements Runnable {
+
+    private Connection conn;
+    private UserDAO userDao;
+
+    public ListCommand() {
+        try {
+            this.conn = Database.getConnection();
+            this.userDao = new UserDAO(conn);
+        } catch (SQLException e) {
+            System.out.println(
+                ConsoleTheme.formatError(
+                    "Database connection error: " + e.getMessage()
+                )
+            );
+        }
+    }
 
     @Override
     public void run() {
@@ -34,12 +53,22 @@ public class ListCommand implements Runnable {
                         "ID: %d" +
                         ConsoleColors.RESET +
                         " | " +
+                        ConsoleColors.CYAN +
+                        "Author: %s" +
+                        ConsoleColors.RESET +
+                        " | " +
+                        ConsoleColors.GREEN +
+                        "%s" +
+                        ConsoleColors.RESET +
+                        " | Description: " +
                         ConsoleColors.GREEN +
                         "%s" +
                         ConsoleColors.RESET +
                         "%n",
                         rs.getInt("id"),
-                        rs.getString("title")
+                        userDao.findById(rs.getInt("user_id")).getUsername(),
+                        rs.getString("title"),
+                        rs.getString("description")
                     );
                 }
                 System.out.println(AsciiArt.DIVIDER);

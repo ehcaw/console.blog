@@ -39,6 +39,7 @@ public class LoginCommand implements Runnable {
     @Override
     public void run() {
         try {
+            System.setProperty("org.jline.terminal.dumb", "true");
             Terminal terminal = TerminalBuilder.terminal();
             LineReader reader = LineReaderBuilder.builder()
                 .terminal(terminal)
@@ -68,7 +69,12 @@ public class LoginCommand implements Runnable {
                     );
                 } else {
                     System.out.println(
-                        ConsoleTheme.formatResponse("Login successful!")
+                        ConsoleTheme.formatResponse(
+                            String.format(
+                                "Login successful! Welcome %s",
+                                user.getUsername()
+                            )
+                        )
                     );
                     // Set the logged-in user in AppState
                     AppGlobalState.getInstance().setCurrentUser(user);
