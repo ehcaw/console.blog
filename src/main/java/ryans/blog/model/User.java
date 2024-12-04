@@ -1,32 +1,42 @@
 package ryans.blog.model;
 
-import java.time.LocalDateTime;
-
 public class User {
-    private Long userId;
+
+    private int id;
     private String username;
     private String password;
-    private LocalDateTime registrationDate;
 
     // Constructors
     public User() {}
 
-    public User(String username, String password) {
+    public User(int id, String username, String password) {
+        this.id = id;
         this.username = username;
         this.password = password;
-        this.registrationDate = LocalDateTime.now();
     }
 
     // Getters and Setters
-    public Long getUserId() { return userId; }
-    public void setUserId(Long userId) { this.userId = userId; }
+    public int getUserId() {
+        return id;
+    }
 
-    public String getUsername() { return username; }
-    public void setUsername(String username) { this.username = username; }
+    public void setUserId(int id) {
+        this.id = id;
+    }
 
-    public String getPassword() { return password; }
-    public void setPassword(String password) { this.password = password; }
+    public String getUsername() {
+        return username;
+    }
 
-    public LocalDateTime getRegistrationDate() { return registrationDate; }
-    public void setRegistrationDate(LocalDateTime registrationDate) { this.registrationDate = registrationDate; }
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
 }
