@@ -65,6 +65,19 @@ public class UserDAO {
         }
     }
 
+    public User findByUsername(String username) throws SQLException {
+        String sql = "SELECT * FROM users WHERE username = ?";
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            pstmt.setString(1, username);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    return mapResultSetToUser(rs);
+                }
+            }
+        }
+        return null;
+    }
+
     public User findByUsernameAndPassword(String username, String password)
         throws SQLException {
         String sql = "SELECT * FROM users WHERE username = ? AND password = ?";
