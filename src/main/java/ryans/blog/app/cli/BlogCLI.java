@@ -10,6 +10,7 @@ import org.jline.terminal.Terminal;
 import org.jline.terminal.TerminalBuilder;
 import picocli.CommandLine;
 import ryans.blog.app.cli.commands.ClearCommand;
+import ryans.blog.app.cli.commands.CommentCommand;
 import ryans.blog.app.cli.commands.CreateCommand;
 import ryans.blog.app.cli.commands.DeleteCommand;
 import ryans.blog.app.cli.commands.EditCommand;
@@ -32,6 +33,7 @@ import ryans.blog.app.cli.utils.ConsoleTheme;
         DeleteCommand.class,
         EditCommand.class,
         SearchCommand.class,
+        CommentCommand.class,
     },
     description = "Retro-style console blog interface"
 )

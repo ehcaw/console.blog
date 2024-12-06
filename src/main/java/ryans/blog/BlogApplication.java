@@ -225,7 +225,7 @@ public class BlogApplication {
             get("/api/posts", (req, res) -> gson.toJson(postDao.findAll()));
 
             get("/api/posts/:id", (req, res) -> {
-                Long id = Long.parseLong(req.params(":id"));
+                Integer id = Integer.parseInt(req.params(":id"));
                 Post post = postDao.findById(id);
                 if (post != null) {
                     return gson.toJson(post);
@@ -235,12 +235,12 @@ public class BlogApplication {
             });
 
             get("/api/users/:id/posts", (req, res) -> {
-                Long authorId = Long.parseLong(req.params(":id"));
+                Integer authorId = Integer.parseInt(req.params(":id"));
                 return gson.toJson(postDao.findByAuthor(authorId));
             });
 
             put("/api/posts/:id", (req, res) -> {
-                Long id = Long.parseLong(req.params(":id"));
+                Integer id = Integer.parseInt(req.params(":id"));
                 Post post = gson.fromJson(req.body(), Post.class);
                 if (postDao.update(post)) {
                     return gson.toJson(post);
@@ -263,9 +263,9 @@ public class BlogApplication {
             });
 
             delete("/api/posts/:id", (req, res) -> {
-                Long id = Long.parseLong(req.params(":id"));
-                Long authorId = Long.parseLong(req.queryParams("authorId"));
-                if (postDao.delete(id, authorId)) {
+                Integer id = Integer.parseInt(req.params(":id"));
+                Integer userId = Integer.parseInt(req.queryParams("userId"));
+                if (postDao.delete(id, userId)) {
                     return "Post deleted";
                 }
                 res.status(404);

@@ -56,6 +56,7 @@ public class ReadCommand implements Runnable {
                 stmt.setInt(1, postId);
                 try (ResultSet rs = stmt.executeQuery()) {
                     if (rs.next()) {
+                        CommentCommand.setCurrentPost(postId);
                         displayPost(rs);
                         displayTags();
                         displayComments();
@@ -133,6 +134,37 @@ public class ReadCommand implements Runnable {
             "╚═══════════════════════════════════════════════════════════════╝" +
             ConsoleColors.RESET
         );
+    }
+
+    // Helper method to format timestamp
+    private String formatTimestamp(String timestamp) {
+        // You can enhance this to show relative time like "2 hours ago"
+        return timestamp.replace("T", " ").substring(0, 16);
+    }
+
+    // Helper method to wrap long lines
+    private List<String> wordWrap(String text, int maxWidth) {
+        List<String> lines = new ArrayList<>();
+        StringBuilder currentLine = new StringBuilder();
+        String[] words = text.split(" ");
+
+        for (String word : words) {
+            if (currentLine.length() + word.length() + 1 <= maxWidth) {
+                if (currentLine.length() > 0) {
+                    currentLine.append(" ");
+                }
+                currentLine.append(word);
+            } else {
+                lines.add(currentLine.toString());
+                currentLine = new StringBuilder(word);
+            }
+        }
+
+        if (currentLine.length() > 0) {
+            lines.add(currentLine.toString());
+        }
+
+        return lines;
     }
 
     private void displayTags() throws SQLException {

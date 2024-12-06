@@ -20,9 +20,9 @@ public class PostDAO {
                     post_id INTEGER PRIMARY KEY AUTOINCREMENT,
                     title VARCHAR(200) NOT NULL,
                     content TEXT NOT NULL,
-                    author_id INTEGER NOT NULL,
+                    user_id INTEGER NOT NULL,
                     post_date TIMESTAMP NOT NULL,
-                    FOREIGN KEY (author_id) REFERENCES users(user_id) ON DELETE CASCADE
+                    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
                 )
             """;
 
@@ -33,7 +33,7 @@ public class PostDAO {
 
     public Post create(Post post) throws SQLException {
         String sql =
-            "INSERT INTO posts (title, content, author_id) VALUES (?, ?, ?)";
+            "INSERT INTO posts (title, content, user_id) VALUES (?, ?, ?)";
 
         try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
             pstmt.setString(1, post.getTitle());
@@ -60,8 +60,8 @@ public class PostDAO {
         return post;
     }
 
-    public Post findById(Long id) throws SQLException {
-        String sql = "SELECT * FROM posts WHERE post_id = ?";
+    public Post findById(Integer id) throws SQLException {
+        String sql = "SELECT * FROM posts WHERE id = ?";
 
         try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
             pstmt.setLong(1, id);
@@ -75,9 +75,9 @@ public class PostDAO {
         return null;
     }
 
-    public List<Post> findByAuthor(Long authorId) throws SQLException {
+    public List<Post> findByAuthor(Integer authorId) throws SQLException {
         String sql =
-            "SELECT * FROM posts WHERE author_id = ? ORDER BY post_date DESC";
+            "SELECT * FROM posts WHERE user_id = ? ORDER BY post_date DESC";
         List<Post> posts = new ArrayList<>();
 
         try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
@@ -109,7 +109,7 @@ public class PostDAO {
 
     public boolean update(Post post) throws SQLException {
         String sql =
-            "UPDATE posts SET title = ?, content = ? WHERE post_id = ? AND author_id = ?";
+            "UPDATE posts SET title = ?, content = ? WHERE id = ? AND user_id = ?";
 
         try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
             pstmt.setString(1, post.getTitle());
@@ -121,18 +121,27 @@ public class PostDAO {
         }
     }
 
-    public boolean delete(Long postId, Long authorId) throws SQLException {
-        String sql = "DELETE FROM posts WHERE post_id = ? AND author_id = ?";
+    public boolean delete(Integer postId, Integer userId) throws SQLException {
+        String sql = "DELETE FROM posts WHERE id = ? AND user_id = ?";
 
         try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
             pstmt.setLong(1, postId);
-            pstmt.setLong(2, authorId);
+            pstmt.setLong(2, userId);
             return pstmt.executeUpdate() > 0;
         }
     }
 
-    public void delete(int postId) {
-        String sql = "DELETE FROM posts WHERE post_id = ?";
+    public boolean delete(Integer postId) throws SQLException {
+        String sql = "DELETE FROM posts WHERE id = ?";
+
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            pstmt.setLong(1, postId);
+            return pstmt.executeUpdate() > 0;
+        }
+    }
+
+    public void thor(Integer postId) {
+        String sql = "DELETE FROM posts WHERE id = ?";
         try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
             pstmt.setInt(1, postId);
             pstmt.executeUpdate();
@@ -146,10 +155,10 @@ public class PostDAO {
 
     private Post mapResultSetToPost(ResultSet rs) throws SQLException {
         Post post = new Post();
-        post.setId(rs.getInt("post_id"));
+        post.setId(rs.getInt("id"));
         post.setTitle(rs.getString("title"));
         post.setContent(rs.getString("content"));
-        post.setUserId(rs.getInt("author_id"));
+        post.setUserId(rs.getInt("user_id"));
         return post;
     }
 }
