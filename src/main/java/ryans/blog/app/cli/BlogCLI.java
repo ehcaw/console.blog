@@ -17,6 +17,7 @@ import ryans.blog.app.cli.commands.HelpCommand;
 import ryans.blog.app.cli.commands.ListCommand;
 import ryans.blog.app.cli.commands.LoginCommand;
 import ryans.blog.app.cli.commands.ReadCommand;
+import ryans.blog.app.cli.commands.SearchCommand;
 import ryans.blog.app.cli.utils.ConsoleTheme;
 
 @Command(
@@ -30,6 +31,7 @@ import ryans.blog.app.cli.utils.ConsoleTheme;
         LoginCommand.class,
         DeleteCommand.class,
         EditCommand.class,
+        SearchCommand.class,
     },
     description = "Retro-style console blog interface"
 )
