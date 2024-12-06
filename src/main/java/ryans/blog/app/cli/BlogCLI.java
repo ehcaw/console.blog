@@ -1,24 +1,18 @@
 package ryans.blog.app.cli;
 
 import static picocli.CommandLine.Command;
-import static picocli.CommandLine.Option;
-import static picocli.CommandLine.Parameters;
 
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.Arrays;
 import org.jline.reader.*;
 import org.jline.reader.impl.DefaultParser;
 import org.jline.reader.impl.completer.*;
 import org.jline.terminal.Terminal;
 import org.jline.terminal.TerminalBuilder;
 import picocli.CommandLine;
-import ryans.blog.app.Database;
 import ryans.blog.app.cli.commands.ClearCommand;
 import ryans.blog.app.cli.commands.CreateCommand;
+import ryans.blog.app.cli.commands.DeleteCommand;
+import ryans.blog.app.cli.commands.EditCommand;
 import ryans.blog.app.cli.commands.HelpCommand;
 import ryans.blog.app.cli.commands.ListCommand;
 import ryans.blog.app.cli.commands.LoginCommand;
@@ -31,10 +25,11 @@ import ryans.blog.app.cli.utils.ConsoleTheme;
         ListCommand.class,
         CreateCommand.class,
         ReadCommand.class,
-        //ExitCommand.class,
         HelpCommand.class,
         ClearCommand.class,
         LoginCommand.class,
+        DeleteCommand.class,
+        EditCommand.class,
     },
     description = "Retro-style console blog interface"
 )
@@ -85,7 +80,9 @@ public class BlogCLI implements Runnable {
                 "read",
                 "exit",
                 "help",
-                "clear"
+                "clear",
+                "edit",
+                "delete"
             )
         );
 

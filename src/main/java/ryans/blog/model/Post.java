@@ -1,37 +1,77 @@
 package ryans.blog.model;
 
-import java.time.LocalDateTime;
-
 public class Post {
-    private Long postId;
-    private String title;
-    private String content;
-    private Long authorId;
-    private LocalDateTime postDate;
 
-    // Constructors
+    private Integer id;
+    private String title;
+    private String description;
+    private String content;
+    private Integer userId;
+    private String createdAt;
+
     public Post() {}
 
-    public Post(String title, String content, Long authorId) {
+    public Post(
+        Integer id,
+        String title,
+        String description,
+        String content,
+        int userId,
+        String createdAt
+    ) {
+        this.id = id;
         this.title = title;
+        this.description = description;
         this.content = content;
-        this.authorId = authorId;
-        this.postDate = LocalDateTime.now();
+        this.userId = userId;
+        this.createdAt = createdAt;
     }
 
-    // Getters and Setters
-    public Long getPostId() { return postId; }
-    public void setPostId(Long postId) { this.postId = postId; }
+    public Integer getId() {
+        return this.id;
+    }
 
-    public String getTitle() { return title; }
-    public void setTitle(String title) { this.title = title; }
+    public void setId(int id) {
+        this.id = id;
+    }
 
-    public String getContent() { return content; }
-    public void setContent(String content) { this.content = content; }
+    public String getTitle() {
+        return this.title;
+    }
 
-    public Long getAuthorId() { return authorId; }
-    public void setAuthorId(Long authorId) { this.authorId = authorId; }
+    public void setTitle(String title) {
+        this.title = title;
+    }
 
-    public LocalDateTime getPostDate() { return postDate; }
-    public void setPostDate(LocalDateTime postDate) { this.postDate = postDate; }
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
+
+    public void setCreatedAt(String createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public void setUserId(int id) {
+        this.userId = id;
+    }
+
+    public Integer getUserId() {
+        return this.userId;
+    }
+
+    public String getCreatedAt() {
+        return this.createdAt;
+    }
 }

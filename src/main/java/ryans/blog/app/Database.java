@@ -4,7 +4,6 @@ import io.github.cdimascio.dotenv.Dotenv;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import ryans.blog.model.User;
 
 public class Database {
 

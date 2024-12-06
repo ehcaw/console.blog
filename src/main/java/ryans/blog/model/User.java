@@ -5,6 +5,7 @@ public class User {
     private int id;
     private String username;
     private String password;
+    private String createdAt;
 
     // Constructors
     public User() {}
@@ -38,5 +39,13 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(String createdAt) {
+        this.createdAt = createdAt;
     }
 }

@@ -4,16 +4,15 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import org.jline.terminal.Terminal;
-import org.jline.terminal.TerminalBuilder;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Parameters;
 import ryans.blog.app.Database;
-import ryans.blog.app.cli.utils.AsciiArt;
-import ryans.blog.app.cli.utils.ConsoleColors;
 import ryans.blog.app.cli.utils.ConsoleTheme;
 
-@Command(name = "read", description = "List all blog posts")
+@Command(
+    name = "read",
+    description = "Read a blog post by adding the post id after read"
+)
 public class ReadCommand implements Runnable {
 
     @Parameters(

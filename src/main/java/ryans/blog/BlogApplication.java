@@ -196,14 +196,10 @@ public class BlogApplication {
                         res.status(400);
                         return "Content is required";
                     }
-                    if (post.getAuthorId() == null) {
+                    if (post.getUserId() == null) {
                         res.status(400);
                         return "Author ID is required";
                     }
-
-                    // Set post date
-                    post.setPostDate(LocalDateTime.now());
-
                     // Create post
                     Post createdPost = postDao.create(post);
                     System.out.println(
@@ -246,7 +242,6 @@ public class BlogApplication {
             put("/api/posts/:id", (req, res) -> {
                 Long id = Long.parseLong(req.params(":id"));
                 Post post = gson.fromJson(req.body(), Post.class);
-                post.setPostId(id);
                 if (postDao.update(post)) {
                     return gson.toJson(post);
                 }

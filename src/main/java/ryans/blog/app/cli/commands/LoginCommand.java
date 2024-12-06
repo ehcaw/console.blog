@@ -1,7 +1,6 @@
 package ryans.blog.app.cli.commands;
 
 import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import org.jline.reader.LineReader;
 import org.jline.reader.LineReaderBuilder;

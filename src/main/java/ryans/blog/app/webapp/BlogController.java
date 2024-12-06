@@ -4,7 +4,6 @@ import static spark.Spark.*;
 
 import java.sql.*;
 import ryans.blog.app.Database;
-import spark.Spark;
 
 public class BlogController {
 
