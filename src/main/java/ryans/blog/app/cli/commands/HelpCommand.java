@@ -16,6 +16,7 @@ public class HelpCommand implements Runnable {
         "search: Search for specific posts (use --tag, --author, --title)\n" +
         "edit: Edit a post\n" +
         "delete: Delete a post\n" +
+        "login: Login to your account to continue interacting\n" +
         ConsoleTheme.RESET;
 
     @Override

@@ -43,8 +43,8 @@ public class EditCommand implements Runnable {
             }
 
             String currentTitle = postDetails[0];
-            String currentContent = postDetails[1];
-            String currentDescription = postDetails[2];
+            String currentDescription = postDetails[1];
+            String currentContent = postDetails[2];
 
             // Get LineReader for input
             LineReader reader = TerminalUtil.getLineReader();
@@ -149,10 +149,10 @@ public class EditCommand implements Runnable {
     private String[] getPost(int postId) throws SQLException {
         try (Connection conn = Database.getConnection()) {
             String query =
-                "SELECT title, content FROM Posts WHERE id = ? AND user_id = ?";
+                "SELECT title, description, content FROM Posts WHERE id = ? AND user_id = ?";
             try (PreparedStatement stmt = conn.prepareStatement(query)) {
                 stmt.setInt(1, postId);
-                stmt.setLong(2, appGlobalState.getCurrentUser().getUserId());
+                stmt.setInt(2, appGlobalState.getCurrentUser().getUserId());
                 try (ResultSet rs = stmt.executeQuery()) {
                     if (rs.next()) {
                         return new String[] {
@@ -181,9 +181,16 @@ public class EditCommand implements Runnable {
                 stmt.setString(2, content);
                 stmt.setString(3, description);
                 stmt.setInt(4, postId);
-                stmt.setLong(5, appGlobalState.getCurrentUser().getUserId());
+                stmt.setInt(5, appGlobalState.getCurrentUser().getUserId());
                 stmt.executeUpdate();
             }
+        } catch (SQLException e) {
+            System.out.println(
+                ConsoleTheme.formatError(
+                    "Database error while updating post: " + e.getMessage()
+                )
+            );
+            throw e;
         }
     }
 }

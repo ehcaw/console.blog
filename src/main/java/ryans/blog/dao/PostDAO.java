@@ -140,19 +140,6 @@ public class PostDAO {
         }
     }
 
-    public void thor(Integer postId) {
-        String sql = "DELETE FROM posts WHERE id = ?";
-        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
-            pstmt.setInt(1, postId);
-            pstmt.executeUpdate();
-        } catch (SQLException e) {
-            throw new RuntimeException(
-                "Error deleting post with ID: " + postId,
-                e
-            );
-        }
-    }
-
     private Post mapResultSetToPost(ResultSet rs) throws SQLException {
         Post post = new Post();
         post.setId(rs.getInt("id"));
