@@ -118,6 +118,14 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>3.5.0</version>
+                <configuration>
+                    <mainClass>ryans.blog.app.webapp.BlogController</mainClass>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 </project>

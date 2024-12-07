@@ -18,34 +18,54 @@ public class TagsDAO {
     }
 
     // Create a new tag
+    public void createTable() throws SQLException {
+        // Drop existing post_tags table if it exists
+        String dropPostTagsSql = "DROP TABLE IF EXISTS post_tags";
+        try (Statement stmt = connection.createStatement()) {
+            stmt.execute(dropPostTagsSql);
+        }
+
+        String sql =
+            """
+                CREATE TABLE IF NOT EXISTS tags (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    name VARCHAR(50) NOT NULL UNIQUE
+                )
+            """;
+
+        try (Statement stmt = connection.createStatement()) {
+            stmt.execute(sql);
+        }
+
+        // Create post_tags table if it doesn't exist
+        String postTagsSql =
+            """
+                CREATE TABLE IF NOT EXISTS post_tags (
+                    post_id INTEGER NOT NULL,
+                    tag_id INTEGER NOT NULL,
+                    PRIMARY KEY (post_id, tag_id),
+                    FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE,
+                    FOREIGN KEY (tag_id) REFERENCES tags(id) ON DELETE CASCADE
+                )
+            """;
+
+        try (Statement stmt = connection.createStatement()) {
+            stmt.execute(postTagsSql);
+        }
+    }
+
     public Tag create(Tag tag) throws SQLException {
-        String query =
-            "INSERT INTO tags (name, created_at) VALUES (?, CURRENT_TIMESTAMP)";
-
-        try (
-            PreparedStatement stmt = connection.prepareStatement(
-                query,
-                Statement.RETURN_GENERATED_KEYS
-            )
-        ) {
-            stmt.setString(1, tag.getName().toLowerCase()); // Store tags in lowercase
-
-            int affectedRows = stmt.executeUpdate();
-
-            if (affectedRows == 0) {
-                throw new SQLException(
-                    "Creating tag failed, no rows affected."
-                );
-            }
-
-            try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
-                if (generatedKeys.next()) {
-                    tag.setId(generatedKeys.getInt(1));
-                    return findById(tag.getId());
+        String sql = "INSERT INTO tags (name) VALUES (?) RETURNING id";
+        
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            pstmt.setString(1, tag.getName());
+            
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    tag.setId(rs.getInt(1));
+                    return tag;
                 } else {
-                    throw new SQLException(
-                        "Creating tag failed, no ID obtained."
-                    );
+                    throw new SQLException("Creating tag failed, no ID obtained.");
                 }
             }
         }
@@ -184,6 +204,25 @@ public class TagsDAO {
         Tag newTag = new Tag();
         newTag.setName(tagName);
         return create(newTag);
+    }
+
+    // Link tag to post
+    public void linkTagToPost(Integer tagId, Integer postId) throws SQLException {
+        String sql = "INSERT INTO post_tags (post_id, tag_id) VALUES (?, ?)";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, postId);
+            stmt.setInt(2, tagId);
+            stmt.executeUpdate();
+        }
+    }
+
+    // Remove all tags from post
+    public void removeAllTagsFromPost(Integer postId) throws SQLException {
+        String sql = "DELETE FROM post_tags WHERE post_id = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, postId);
+            stmt.executeUpdate();
+        }
     }
 
     // Helper method to map ResultSet to Tag object
