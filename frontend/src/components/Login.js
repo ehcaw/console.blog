@@ -50,6 +50,7 @@ function Login() {
             
             if (response.success) {
                 localStorage.setItem('user', JSON.stringify(response.user));
+                console.log('User stored in localStorage:', localStorage.getItem('user'));
                 navigate('/');
             } else {
                 setError(response.error || 'Login failed');

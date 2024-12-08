@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import {
   AppBar,
   Toolbar,
@@ -11,7 +11,20 @@ import {
 import CreateIcon from '@mui/icons-material/Create';
 
 function Navbar() {
-  const userId = localStorage.getItem('userId');
+  const navigate = useNavigate();
+  const userStr = localStorage.getItem('user');
+  const user = JSON.parse(userStr || 'null');
+  const isLoggedIn = user && user.id;
+
+  console.log('Navbar - User string:', userStr);
+  console.log('Navbar - Parsed user:', user);
+  console.log('Navbar - Is logged in:', isLoggedIn);
+
+  const handleLogout = () => {
+    localStorage.removeItem('user');
+    navigate('/');
+    window.location.reload();
+  };
 
   return (
     <AppBar position="static">
@@ -37,33 +50,42 @@ function Navbar() {
               to="/posts"
               sx={{ mx: 1 }}
             >
-              Posts
+              POSTS
             </Button>
-            {!userId ? (
+            {isLoggedIn && (
+              <Button
+                color="inherit"
+                component={RouterLink}
+                to="/create-post"
+                sx={{ mx: 1 }}
+                startIcon={<CreateIcon />}
+              >
+                CREATE
+              </Button>
+            )}
+            {!isLoggedIn ? (
               <>
                 <Button
                   color="inherit"
                   component={RouterLink}
                   to="/login"
                 >
-                  Login
+                  LOGIN
                 </Button>
                 <Button
                   color="inherit"
                   component={RouterLink}
                   to="/register"
                 >
-                  Register
+                  REGISTER
                 </Button>
               </>
             ) : (
               <Button
                 color="inherit"
-                component={RouterLink}
-                to="/create-post"
-                startIcon={<CreateIcon />}
+                onClick={handleLogout}
               >
-                Write
+                LOGOUT
               </Button>
             )}
           </Box>
