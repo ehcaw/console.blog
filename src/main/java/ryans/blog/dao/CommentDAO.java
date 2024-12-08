@@ -19,6 +19,11 @@ public class CommentDAO {
 
     // Create a new comment
     public Comment create(Comment comment) throws SQLException {
+        System.out.println("CommentDAO.create - Input comment: " + comment);
+        if (comment.getContent() == null || comment.getContent().trim().isEmpty()) {
+            throw new SQLException("Comment content cannot be null or empty");
+        }
+
         String query =
             "INSERT INTO comments (content, post_id, user_id, created_at) " +
             "VALUES (?, ?, ?, CURRENT_TIMESTAMP)";
@@ -29,11 +34,17 @@ public class CommentDAO {
                 Statement.RETURN_GENERATED_KEYS
             )
         ) {
+            System.out.println("Setting prepared statement parameters:");
+            System.out.println("1. Content: " + comment.getContent());
+            System.out.println("2. Post ID: " + comment.getPostId());
+            System.out.println("3. User ID: " + comment.getUserId());
+
             stmt.setString(1, comment.getContent());
             stmt.setInt(2, comment.getPostId());
             stmt.setInt(3, comment.getUserId());
 
             int affectedRows = stmt.executeUpdate();
+            System.out.println("Affected rows: " + affectedRows);
 
             if (affectedRows == 0) {
                 throw new SQLException(
@@ -43,8 +54,12 @@ public class CommentDAO {
 
             try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
                 if (generatedKeys.next()) {
-                    comment.setId(generatedKeys.getInt(1));
-                    return findById(comment.getId());
+                    int newId = generatedKeys.getInt(1);
+                    System.out.println("Generated comment ID: " + newId);
+                    comment.setId(newId);
+                    Comment created = findById(comment.getId());
+                    System.out.println("Retrieved created comment: " + created);
+                    return created;
                 } else {
                     throw new SQLException(
                         "Creating comment failed, no ID obtained."

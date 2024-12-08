@@ -1,15 +1,21 @@
 package ryans.blog.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Post {
 
     private Integer id;
+    private Integer userId;
     private String title;
     private String description;
     private String content;
-    private Integer userId;
     private String createdAt;
+    private List<String> tags;
 
-    public Post() {}
+    public Post() {
+        this.tags = new ArrayList<>();
+    }
 
     public Post(
         Integer id,
@@ -25,6 +31,7 @@ public class Post {
         this.content = content;
         this.userId = userId;
         this.createdAt = createdAt;
+        this.tags = new ArrayList<>();
     }
 
     public Integer getId() {
@@ -73,5 +80,13 @@ public class Post {
 
     public String getCreatedAt() {
         return this.createdAt;
+    }
+
+    public List<String> getTags() {
+        return tags != null ? tags : new ArrayList<>();
+    }
+
+    public void setTags(List<String> tags) {
+        this.tags = tags;
     }
 }

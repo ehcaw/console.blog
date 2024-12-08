@@ -1,73 +1,66 @@
 import React, { useState, useEffect } from 'react';
-import { Link as RouterLink } from 'react-router-dom';
-import {
-  Container,
-  Typography,
-  Grid,
-  Card,
-  CardContent,
-  CardActions,
-  Button,
-  Box,
-} from '@mui/material';
+import { Container, Typography, Box } from '@mui/material';
+import PostList from './PostList';
+import SearchBar from './SearchBar';
 import api from '../services/api';
 
 function Home() {
-  const [recentPosts, setRecentPosts] = useState([]);
+  const [posts, setPosts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+
+  const fetchPosts = async (searchParams = {}) => {
+    try {
+      setLoading(true);
+      setError('');
+      console.log('Fetching posts with params:', searchParams);
+      
+      const response = Object.keys(searchParams).length === 0 
+        ? await api.getPosts()
+        : await api.searchPosts(searchParams);
+
+      console.log('Received response:', response);
+      
+      if (!response.success) {
+        throw new Error(response.error || 'Failed to fetch posts');
+      }
+      
+      if (!Array.isArray(response.posts)) {
+        console.error('Posts is not an array:', response.posts);
+        setPosts([]);
+        return;
+      }
+
+      setPosts(response.posts);
+    } catch (error) {
+      console.error('Error fetching posts:', error);
+      setError(error.message || 'Failed to load posts');
+      setPosts([]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchRecentPosts = async () => {
-      try {
-        const response = await api.getPosts();
-        setRecentPosts(response.data.slice(0, 3)); // Get latest 3 posts
-      } catch (error) {
-        console.error('Error fetching recent posts:', error);
-      }
-    };
-
-    fetchRecentPosts();
+    fetchPosts();
   }, []);
 
-  return (
-    <Container>
-      <Box sx={{ my: 4 }}>
-        <Typography variant="h2" component="h1" gutterBottom>
-          Welcome to Console.Blog
-        </Typography>
-        <Typography variant="h5" color="text.secondary" paragraph>
-          A modern blogging platform for developers
-        </Typography>
-      </Box>
+  const handleSearch = (searchParams) => {
+    fetchPosts(searchParams);
+  };
 
-      <Box sx={{ my: 4 }}>
-        <Typography variant="h4" gutterBottom>
-          Recent Posts
+  return (
+    <Container maxWidth="md" sx={{ mt: 4 }}>
+      <Box sx={{ mb: 4 }}>
+        <Typography variant="h4" component="h1" gutterBottom>
+          Blog Posts
         </Typography>
-        <Grid container spacing={4}>
-          {recentPosts.map((post) => (
-            <Grid item xs={12} md={4} key={post.postId}>
-              <Card>
-                <CardContent>
-                  <Typography variant="h6" gutterBottom>
-                    {post.title}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    {post.content.substring(0, 100)}...
-                  </Typography>
-                </CardContent>
-                <CardActions>
-                  <Button
-                    size="small"
-                    component={RouterLink}
-                    to={`/posts/${post.postId}`}
-                  >
-                    Read More
-                  </Button>
-                </CardActions>
-              </Card>
-            </Grid>
-          ))}
-        </Grid>
+        <SearchBar onSearch={handleSearch} />
+        <PostList 
+          posts={posts} 
+          loading={loading} 
+          error={error} 
+        />
       </Box>
     </Container>
   );

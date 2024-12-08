@@ -7,6 +7,7 @@ import Home from './components/Home';
 import PostList from './components/PostList';
 import PostDetail from './components/PostDetail';
 import CreatePost from './components/CreatePost';
+import EditPost from './components/EditPost';
 import UserProfile from './components/UserProfile';
 import Register from './components/Register';
 import Login from './components/Login';
@@ -33,11 +34,19 @@ function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/posts" element={<PostList />} />
-            <Route path="/posts/:id" element={<PostDetail />} />
+            <Route 
+              path="/posts/:postId" 
+              element={<PostDetail />} 
+              loader={({ params }) => {
+                console.log('Route params:', params);
+                return null;
+              }}
+            />
+            <Route path="/edit-post/:id" element={<EditPost />} />
+            <Route path="/login" element={<Login />} />
             <Route path="/create-post" element={<CreatePost />} />
             <Route path="/profile/:id" element={<UserProfile />} />
             <Route path="/register" element={<Register />} />
-            <Route path="/login" element={<Login />} />
           </Routes>
         </div>
       </Router>
