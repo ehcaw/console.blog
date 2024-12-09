@@ -2,7 +2,6 @@ package ryans.blog.dao;
 
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import ryans.blog.model.Post;
 
@@ -14,35 +13,39 @@ public class PostDAO {
         this.connection = connection;
     }
 
-    private static final String CREATE_TABLE_SQL = """
-        CREATE TABLE IF NOT EXISTS posts (
-            id SERIAL PRIMARY KEY,
-            user_id INTEGER NOT NULL,
-            title TEXT NOT NULL,
-            description TEXT,
-            content TEXT NOT NULL,
-            created_at TIMESTAMP NOT NULL,
-            FOREIGN KEY (user_id) REFERENCES users(id)
-        )
-    """;
+    private static final String CREATE_TABLE_SQL =
+        """
+            CREATE TABLE IF NOT EXISTS posts (
+                id SERIAL PRIMARY KEY,
+                user_id INTEGER NOT NULL,
+                title TEXT NOT NULL,
+                description TEXT,
+                content TEXT NOT NULL,
+                created_at TIMESTAMP NOT NULL,
+                FOREIGN KEY (user_id) REFERENCES users(id)
+            )
+        """;
 
-    private static final String INSERT_SQL = """
-        INSERT INTO posts (user_id, title, description, content, created_at)
-        VALUES (?, ?, ?, ?, ?)
-        RETURNING id, user_id, title, description, content, created_at
-    """;
+    private static final String INSERT_SQL =
+        """
+            INSERT INTO posts (user_id, title, description, content, created_at)
+            VALUES (?, ?, ?, ?, ?)
+            RETURNING id, user_id, title, description, content, created_at
+        """;
 
-    private static final String LAST_INSERT_ID = """
-        SELECT last_insert_rowid() as id
-    """;
+    private static final String LAST_INSERT_ID =
+        """
+            SELECT last_insert_rowid() as id
+        """;
 
-    private static final String UPDATE_SQL = """
-        UPDATE posts
-        SET title = ?,
-            description = ?,
-            content = ?
-        WHERE id = ?
-    """;
+    private static final String UPDATE_SQL =
+        """
+            UPDATE posts
+            SET title = ?,
+                description = ?,
+                content = ?
+            WHERE id = ?
+        """;
 
     public void createTable() throws SQLException {
         try (Statement stmt = connection.createStatement()) {
@@ -57,7 +60,7 @@ public class PostDAO {
             stmt.setString(3, post.getDescription());
             stmt.setString(4, post.getContent());
             stmt.setTimestamp(5, new Timestamp(System.currentTimeMillis()));
-            
+
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
                     Post createdPost = new Post();
@@ -66,7 +69,9 @@ public class PostDAO {
                     createdPost.setTitle(rs.getString("title"));
                     createdPost.setDescription(rs.getString("description"));
                     createdPost.setContent(rs.getString("content"));
-                    createdPost.setCreatedAt(rs.getTimestamp("created_at").toString());
+                    createdPost.setCreatedAt(
+                        rs.getTimestamp("created_at").toString()
+                    );
                     return createdPost;
                 }
                 throw new SQLException("Creating post failed, no ID obtained.");
@@ -137,7 +142,9 @@ public class PostDAO {
     public boolean delete(Integer id, Integer userId) throws SQLException {
         // Delete associated tags first
         String deleteTagsSql = "DELETE FROM post_tags WHERE post_id = ?";
-        try (PreparedStatement pstmt = connection.prepareStatement(deleteTagsSql)) {
+        try (
+            PreparedStatement pstmt = connection.prepareStatement(deleteTagsSql)
+        ) {
             pstmt.setInt(1, id);
             pstmt.executeUpdate();
         }
@@ -160,15 +167,21 @@ public class PostDAO {
         }
     }
 
-    public List<Post> searchPosts(String title, String author, List<String> tags) throws SQLException {
-        StringBuilder sql = new StringBuilder("""
-            SELECT DISTINCT p.*
-            FROM posts p
-            LEFT JOIN users u ON p.user_id = u.id
-            LEFT JOIN post_tags pt ON p.id = pt.post_id
-            LEFT JOIN tags t ON pt.tag_id = t.id
-            WHERE 1=1
-        """);
+    public List<Post> searchPosts(
+        String title,
+        String author,
+        List<String> tags
+    ) throws SQLException {
+        StringBuilder sql = new StringBuilder(
+            """
+                SELECT DISTINCT p.*
+                FROM posts p
+                LEFT JOIN users u ON p.user_id = u.id
+                LEFT JOIN post_tags pt ON p.id = pt.post_id
+                LEFT JOIN tags t ON pt.tag_id = t.id
+                WHERE 1=1
+            """
+        );
         List<Object> params = new ArrayList<>();
 
         if (title != null && !title.trim().isEmpty()) {
@@ -192,7 +205,11 @@ public class PostDAO {
 
         sql.append(" ORDER BY p.created_at DESC");
 
-        try (PreparedStatement pstmt = connection.prepareStatement(sql.toString())) {
+        try (
+            PreparedStatement pstmt = connection.prepareStatement(
+                sql.toString()
+            )
+        ) {
             for (int i = 0; i < params.size(); i++) {
                 pstmt.setObject(i + 1, params.get(i));
             }
@@ -215,7 +232,7 @@ public class PostDAO {
         post.setDescription(rs.getString("description"));
         post.setContent(rs.getString("content"));
         post.setCreatedAt(rs.getTimestamp("created_at").toString());
-        post.setTags(new ArrayList<>());  // Tags will be set by TagsDAO
+        post.setTags(new ArrayList<>()); // Tags will be set by TagsDAO
         return post;
     }
 }
