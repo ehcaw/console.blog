@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import Navbar from './components/Navbar';
@@ -24,6 +24,18 @@ const darkTheme = createTheme({
   },
 });
 
+function PrivateRoute({ children }) {
+  const userStr = localStorage.getItem('user');
+  const user = JSON.parse(userStr || 'null');
+  const isLoggedIn = user && user.id;
+
+  if (!isLoggedIn) {
+    return <Navigate to="/login" replace />;
+  }
+
+  return children;
+}
+
 function App() {
   return (
     <ThemeProvider theme={darkTheme}>
@@ -44,7 +56,14 @@ function App() {
             />
             <Route path="/edit-post/:id" element={<EditPost />} />
             <Route path="/login" element={<Login />} />
-            <Route path="/create-post" element={<CreatePost />} />
+            <Route 
+              path="/create-post" 
+              element={
+                <PrivateRoute>
+                  <CreatePost />
+                </PrivateRoute>
+              } 
+            />
             <Route path="/profile/:id" element={<UserProfile />} />
             <Route path="/register" element={<Register />} />
           </Routes>
