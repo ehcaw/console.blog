@@ -14,3 +14,5 @@ run mvn clean package or ./cblog.sh -b to build the application
   - cd into front end, run npm install to download the dependencies
   - run npm start to start up the front end development server
   - access the application from your browser
+# NOTE --- You do not have to create a database to use the application. It will not work.
+  The database is hosted on Render and it should work as long as you have the .env file set up. 
